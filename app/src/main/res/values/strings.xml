@@ -1,0 +1,51 @@
+<resources>
+    <string name="app_name">EventApp</string>
+    <string name="app_logo">Event App</string>
+
+    <string name="subheader_login">Sign in to continue</string>
+    <string name="email_label">Email</string>
+    <string name="email_placeholder">Enter your email</string>
+    <string name="password_label">Password</string>
+    <string name="password_placeholder">Enter your password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="btn_sign_in_label">Sign In</string>
+    <string name="don_have_account">Don\'t have an account?</string>
+    <string name="sign_up_label">Sign Up</string>
+    <!-- Login -->
+    <string name="sign_in_to_continue">Sign in to continue</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+
+    <!-- Register -->
+    <string name="sign_up_to_get_started">Sign up to get started</string>
+    <string name="full_name">Full Name</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="enter_your_phone_number">Enter your phone number</string>
+    <string name="create_a_password">Create a password</string>
+    <string name="confirm_your_password">Confirm your password</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="sign_in">Sign In</string>
+
+    <!-- Bottom Navigation -->
+    <string name="title_home">Home</string>
+    <string name="title_search">Search</string>
+    <string name="title_bookings">Bookings</string>
+    <string name="title_profile">Profile</string>
+
+    <!-- Home -->
+    <string name="events">Events</string>
+    <string name="all">All</string>
+    <string name="technology">Technology</string>
+    <string name="music">Music</string>
+    <string name="workshop">Workshop</string>
+    <string name="business">Business</string>
+    <string name="no_events_found">No events found</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
