@@ -15,6 +15,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventApp">
         <activity
+            android:name=".ui.tickets.BookingConfirmationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.event.EventDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.home.HomeActivity"
             android:exported="false" />
         <activity

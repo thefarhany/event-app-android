@@ -1,35 +1,47 @@
 package com.thefarhany.eventapp
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.thefarhany.eventapp.data.local.UserPreferences
+import com.thefarhany.eventapp.data.remote.RetrofitClient
 import com.thefarhany.eventapp.ui.auth.login.LoginActivity
+import com.thefarhany.eventapp.ui.home.HomeActivity
+import com.thefarhany.eventapp.utils.SessionManager
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var userPreferences: UserPreferences
+    private lateinit var sessionManager: SessionManager
 
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        userPreferences = UserPreferences(this)
+        RetrofitClient.init(this)
+        sessionManager = SessionManager(this)
+        checkLoginStatus()
+    }
 
-        // Display user info
-        val tvWelcome = findViewById<TextView>(R.id.tvWelcome)
-        val btnLogout = findViewById<Button>(R.id.btnLogout)
+    private fun checkLoginStatus() {
+        val isLoggedIn = sessionManager.isLoggedIn()
+        val token = sessionManager.getAuthToken()
 
-        tvWelcome.text = "Welcome, ${userPreferences.getUserName()}!"
-
-        btnLogout.setOnClickListener {
-            userPreferences.clearSession()
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+        if (isLoggedIn && token != null) {
+            navigateToHome()
+        } else {
+            navigateToLogin()
         }
+    }
+
+    private fun navigateToHome() {
+        val intent = Intent(this, HomeActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }

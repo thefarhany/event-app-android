@@ -4,7 +4,6 @@ import android.util.Log
 import com.google.gson.Gson
 import com.thefarhany.eventapp.data.model.request.LoginRequest
 import com.thefarhany.eventapp.data.model.request.RegisterRequest
-import com.thefarhany.eventapp.data.model.response.LoginResponse
 import com.thefarhany.eventapp.data.model.response.RegisterResponse
 import com.thefarhany.eventapp.data.remote.ApiService
 import com.thefarhany.eventapp.utils.Resource
@@ -23,7 +22,6 @@ class AuthRepository(private val apiService: ApiService) {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.register(request)
-
                 if (response.success) {
                     Log.d(TAG, "Registration successful")
                     Resource.Success(response.data)
@@ -32,17 +30,13 @@ class AuthRepository(private val apiService: ApiService) {
                     val errorMessage = parseRegisterError(response.errorCode, response.message)
                     Resource.Error(errorMessage)
                 }
-
             } catch (e: HttpException) {
                 Log.e(TAG, "HTTP ${e.code()}: ${e.message()}")
-
                 val errorMessage = try {
                     val errorBody = e.response()?.errorBody()?.string()
-
                     if (!errorBody.isNullOrEmpty()) {
                         val gson = Gson()
                         val errorResponse = gson.fromJson(errorBody, RegisterResponse::class.java)
-
                         parseRegisterError(errorResponse.errorCode, errorResponse.message)
                     } else {
                         "Registration failed"
@@ -51,9 +45,7 @@ class AuthRepository(private val apiService: ApiService) {
                     Log.e(TAG, "Failed to parse error: ${parseException.message}")
                     "Registration failed"
                 }
-
                 Resource.Error(errorMessage)
-
             } catch (e: IOException) {
                 Log.e(TAG, "Network error: ${e.message}")
                 Resource.Error("Connection failed. Please check your internet connection.")
@@ -64,40 +56,29 @@ class AuthRepository(private val apiService: ApiService) {
         }
     }
 
-    suspend fun login(request: LoginRequest): Resource<Unit> {
+    suspend fun login(request: LoginRequest): Resource<String> {
         return withContext(Dispatchers.IO) {
             try {
                 val response = apiService.login(request)
+                val body = response.body()
 
-                if (response.success) {
-                    Log.d(TAG, "Login successful")
-                    Resource.Success(null)
+                if (response.isSuccessful && body?.success == true) {
+                    val setCookie = response.headers()["Set-Cookie"]
+                    val token = extractTokenFromCookie(setCookie)
+
+                    if (token != null) {
+                        Log.d(TAG, "Login successful - Token: ${token.take(20)}...")
+                        Resource.Success(token)
+                    } else {
+                        Resource.Error("Failed to get authentication token")
+                    }
                 } else {
-                    Log.w(TAG, "Login failed: ${response.message}")
-                    val errorMessage = parseLoginError(response.errorCode, response.message)
+                    val errorMessage = parseLoginError(body?.errorCode, body?.message)
                     Resource.Error(errorMessage)
                 }
-
             } catch (e: HttpException) {
                 Log.e(TAG, "HTTP ${e.code()}: ${e.message()}")
-
-                val errorMessage = try {
-                    val errorBody = e.response()?.errorBody()?.string()
-
-                    if (!errorBody.isNullOrEmpty()) {
-                        val gson = Gson()
-                        val errorResponse = gson.fromJson(errorBody, LoginResponse::class.java)
-                        parseLoginError(errorResponse.errorCode, errorResponse.message)
-                    } else {
-                        "Login failed"
-                    }
-                } catch (parseException: Exception) {
-                    Log.e(TAG, "Failed to parse error: ${parseException.message}")
-                    "Login failed"
-                }
-
-                Resource.Error(errorMessage)
-
+                Resource.Error("Login failed")
             } catch (e: IOException) {
                 Log.e(TAG, "Network error: ${e.message}")
                 Resource.Error("Connection failed. Please check your internet connection.")
@@ -108,14 +89,23 @@ class AuthRepository(private val apiService: ApiService) {
         }
     }
 
+    private fun extractTokenFromCookie(setCookie: String?): String? {
+        if (setCookie == null) return null
+
+        val regex = "jwt=([^;]+)".toRegex()
+        return regex.find(setCookie)?.groupValues?.get(1)
+    }
+
+
     suspend fun logout(): Resource<Unit> {
         return withContext(Dispatchers.IO) {
             try {
                 apiService.logout()
-                Resource.Success(null)
+                Log.d(TAG, "Logout successful")
+                Resource.Success(Unit)
             } catch (e: Exception) {
                 Log.e(TAG, "Logout failed: ${e.message}", e)
-                Resource.Error(e.message ?: "Logout failed")
+                Resource.Success(Unit)
             }
         }
     }

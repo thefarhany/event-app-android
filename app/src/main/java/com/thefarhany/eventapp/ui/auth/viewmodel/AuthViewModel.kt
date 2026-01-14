@@ -15,8 +15,8 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
     private val _registerResult = MutableLiveData<Resource<String>>()
     val registerResult: LiveData<Resource<String>> = _registerResult
 
-    private val _loginResult = MutableLiveData<Resource<Unit>>()
-    val loginResult: LiveData<Resource<Unit>> = _loginResult
+    private val _loginResult = MutableLiveData<Resource<String>>()
+    val loginResult: LiveData<Resource<String>> = _loginResult
 
     fun register(
         firstName: String,

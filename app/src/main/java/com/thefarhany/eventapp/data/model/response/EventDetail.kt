@@ -1,6 +1,8 @@
 package com.thefarhany.eventapp.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.thefarhany.eventapp.data.model.response.EventCategories
+import com.thefarhany.eventapp.data.model.response.EventType
 
 data class EventDetail(
     @SerializedName("title")
@@ -22,10 +24,10 @@ data class EventDetail(
     val time: String,
 
     @SerializedName("eventType")
-    val eventType: String,
+    val eventType: EventType,
 
     @SerializedName("category")
-    val category: String,
+    val category: EventCategories,
 
     @SerializedName("totalCapacity")
     val totalCapacity: Int,
@@ -46,7 +48,6 @@ data class EventDetail(
     val warningMessage: String?
 )
 
-// LocationResponse - tambahkan field yang missing
 data class LocationResponse(
     @SerializedName("venue")
     val venue: String,
@@ -61,7 +62,6 @@ data class LocationResponse(
     val country: String
 )
 
-// ⚠️ TAMBAH DATA CLASS INI untuk online event
 data class OnlineEventResponse(
     @SerializedName("platform")
     val platform: String,
@@ -71,6 +71,9 @@ data class OnlineEventResponse(
 )
 
 data class TicketResponse(
+    @SerializedName("ticketId")
+    val ticketId: Long,
+
     @SerializedName("ticketName")
     val ticketName: String,
 
@@ -78,10 +81,9 @@ data class TicketResponse(
     val price: Double,
 
     @SerializedName("quantity")
-    val quantity: Int
+    val quantity: Int,
 )
 
-// Response wrapper tetap sama
 data class EventDetailResponse(
     @SerializedName("success")
     val success: Boolean,

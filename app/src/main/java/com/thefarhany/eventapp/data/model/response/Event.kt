@@ -1,6 +1,8 @@
 package com.thefarhany.eventapp.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.thefarhany.eventapp.data.model.response.EventCategories
+import com.thefarhany.eventapp.data.model.response.EventType
 
 data class Event(
     @SerializedName("eventId")
@@ -16,10 +18,10 @@ data class Event(
     val imageUrl: String?,
 
     @SerializedName("eventType")
-    val eventType: String,
+    val eventType: EventType,
 
     @SerializedName("category")
-    val category: String,
+    val category: EventCategories,
 
     @SerializedName("date")
     val date: String,
@@ -27,11 +29,11 @@ data class Event(
     @SerializedName("time")
     val time: String,
 
-    @SerializedName("venue")
-    val venue: String?,
+    @SerializedName("location")
+    val location: LocationResponse?,
 
-    @SerializedName("city")
-    val city: String?,
+    @SerializedName("onlineEvent")
+    val onlineEvent: OnlineEventResponse?,
 
     @SerializedName("price")
     val price: Int,
@@ -43,7 +45,6 @@ data class Event(
     val remainingCapacity: Int
 )
 
-// Response wrapper tetap sama
 data class EventResponse(
     @SerializedName("success")
     val success: Boolean,

@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.thefarhany.eventapp.R
 import com.thefarhany.eventapp.data.model.Event
+import com.thefarhany.eventapp.data.model.response.EventCategories
+import com.thefarhany.eventapp.data.model.response.EventType
 import com.thefarhany.eventapp.databinding.ItemEventBinding
 import java.text.NumberFormat
 import java.time.LocalDate
@@ -43,30 +45,35 @@ class EventAdapter(
         @RequiresApi(Build.VERSION_CODES.O)
         fun bind(event: Event) {
             binding.apply {
-                // Event Title
                 tvEventTitle.text = event.title
+                tvEventDescription.text = event.shortSummary ?: "Tap to see more details"
 
-                // Event Description/Summary
-                tvEventDescription.text = event.shortSummary
-                    ?: "Tap to see more details"
-
-                // Location
-                val locationText = "${event.venue}, ${event.city}"
+                // ✅ Handle EventType enum
+                val locationText = when (event.eventType) {
+                    EventType.ONLINE -> "Online Event"
+                    EventType.OFFLINE -> {
+                        if (event.location != null) {
+                            "${event.location.venue}, ${event.location.city}"
+                        } else {
+                            "Location TBA"
+                        }
+                    }
+                }
                 tvLocation.text = locationText
 
                 // Date & Time
                 val dateText = formatDateTime(event.date, event.time)
                 tvDate.text = dateText
 
-                // Spots Left (remaining capacity)
-                val spotsText = "${ event.remainingCapacity} spots left"
+                // Spots Left
+                val spotsText = "${event.remainingCapacity} spots left"
                 tvSpotsLeft.text = spotsText
 
                 // Price
                 tvPrice.text = formatPrice(event.price.toDouble())
 
-                // Category Badge
-                tvBadge.text = event.category
+                // ✅ Category Badge - gunakan displayValue untuk UI
+                tvBadge.text = event.category.displayValue
                 badgeOnsite.setCardBackgroundColor(
                     getCategoryColor(event.category)
                 )
@@ -80,20 +87,14 @@ class EventAdapter(
                         .centerCrop()
                         .into(ivEventImage)
                 } else {
-                    // Default placeholder
                     ivEventImage.setBackgroundColor(
                         itemView.context.getColor(R.color.gray_200)
                     )
                 }
 
                 // Click Listeners
-                root.setOnClickListener {
-                    onItemClick(event)
-                }
-
-                btnViewDetails.setOnClickListener {
-                    onItemClick(event)
-                }
+                root.setOnClickListener { onItemClick(event) }
+                btnViewDetails.setOnClickListener { onItemClick(event) }
             }
         }
 
@@ -121,14 +122,17 @@ class EventAdapter(
             }
         }
 
-        private fun getCategoryColor(category: String): Int {
-            return when (category.uppercase()) {
-                "TECHNOLOGY" -> itemView.context.getColor(R.color.primary)
-                "MUSIC" -> itemView.context.getColor(R.color.success_green)
-                "WORKSHOP" -> itemView.context.getColor(R.color.orange)
-                "SPORTS" -> itemView.context.getColor(R.color.blue)
-                "ART" -> itemView.context.getColor(R.color.purple)
-                else -> itemView.context.getColor(R.color.gray_500)
+        private fun getCategoryColor(category: EventCategories): Int {
+            return when (category) {
+                EventCategories.SPORTS -> itemView.context.getColor(R.color.blue)
+                EventCategories.MUSIC -> itemView.context.getColor(R.color.success_green)
+                EventCategories.WORKSHOP -> itemView.context.getColor(R.color.orange)
+                EventCategories.CONFERENCE -> itemView.context.getColor(R.color.primary)
+                EventCategories.SEMINAR -> itemView.context.getColor(R.color.purple)
+                EventCategories.ARTS_THEATRE -> itemView.context.getColor(R.color.pink)
+                EventCategories.EXHIBITION -> itemView.context.getColor(R.color.teal)
+                EventCategories.FESTIVALS -> itemView.context.getColor(R.color.yellow)
+                EventCategories.COMPETITION -> itemView.context.getColor(R.color.red)
             }
         }
     }

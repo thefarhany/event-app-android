@@ -29,4 +29,9 @@
     <color name="orange">#FF9800</color>
     <color name="blue">#2196F3</color>
     <color name="purple">#9C27B0</color>
+    <color name="pink">#FF8C8C</color>
+    <color name="teal">#22E47C</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="red">#F85B5B</color>
+
 </resources>

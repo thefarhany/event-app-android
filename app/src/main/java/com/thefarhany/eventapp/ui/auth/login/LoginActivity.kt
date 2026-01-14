@@ -10,8 +10,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.ViewModelProvider
-import com.thefarhany.eventapp.MainActivity
-import com.thefarhany.eventapp.data.local.UserPreferences
 import com.thefarhany.eventapp.data.remote.RetrofitClient
 import com.thefarhany.eventapp.data.repository.AuthRepository
 import com.thefarhany.eventapp.databinding.ActivityLoginBinding
@@ -21,20 +19,28 @@ import com.thefarhany.eventapp.ui.auth.viewmodel.AuthViewModel
 import com.thefarhany.eventapp.ui.auth.viewmodel.AuthViewModelFactory
 import com.thefarhany.eventapp.ui.home.HomeActivity
 import com.thefarhany.eventapp.utils.Resource
+import com.thefarhany.eventapp.utils.SessionManager
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var viewModel: AuthViewModel
-    private lateinit var userPreferences: UserPreferences
+    private lateinit var sessionManager: SessionManager
+
+    companion object {
+        private const val TAG = "LoginActivity"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        userPreferences = UserPreferences(this)
+        sessionManager = SessionManager(this)
+
+        RetrofitClient.init(this)
 
         setupViewModel()
         setupLiveValidation()
@@ -137,48 +143,67 @@ class LoginActivity : AppCompatActivity() {
                 is Resource.Loading -> {
                     showLoading(true)
                 }
+
                 is Resource.Success -> {
-                    showLoading(false)
-                    val email = binding.etEmail.text.toString().trim()
-                    userPreferences.saveLoginSession(email, email.substringBefore("@"))
-                    Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    finish()
+                    val token = resource.data
+
+                    if (token != null) {
+                        sessionManager.saveAuthToken(token)
+
+                        Log.d(TAG, "✅ Token saved: ${token.take(20)}...")
+
+                        Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
+
+                        navigateToHome()
+                    } else {
+                        showLoading(false)
+                        Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show()
+                    }
                 }
+
                 is Resource.Error -> {
                     showLoading(false)
-
-                    Log.e("LoginActivity", "Login error: ${resource.message}")
-
-                    binding.tilEmail.error = null
-                    binding.tilPassword.error = null
-
-                    val errorMsg = resource.message ?: "Login failed"
-
-                    when {
-                        errorMsg.contains("Email not registered", ignoreCase = true) ||
-                                errorMsg.contains("Email is not registered", ignoreCase = true) -> {
-                            binding.tilEmail.error = "Email is not registered"
-                            binding.etEmail.requestFocus()
-                        }
-                        errorMsg.contains("Incorrect password", ignoreCase = true) -> {
-                            binding.tilPassword.error = "Incorrect password"
-                            binding.etPassword.requestFocus()
-                        }
-                        errorMsg.contains("Connection failed", ignoreCase = true) -> {
-                            com.google.android.material.snackbar.Snackbar.make(
-                                binding.root,
-                                errorMsg,
-                                com.google.android.material.snackbar.Snackbar.LENGTH_LONG
-                            ).show()
-                        }
-                        else -> {
-                            Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
-                        }
-                    }
+                    Log.e(TAG, "Login error: ${resource.message}")
+                    handleLoginError(resource.message)
                 }
             }
         }
+    }
+
+    private fun handleLoginError(errorMessage: String?) {
+        binding.tilEmail.error = null
+        binding.tilPassword.error = null
+
+        val errorMsg = errorMessage ?: "Login failed"
+
+        when {
+            errorMsg.contains("Email not registered", ignoreCase = true) ||
+                    errorMsg.contains("Email is not registered", ignoreCase = true) -> {
+                binding.tilEmail.error = "Email is not registered"
+                binding.etEmail.requestFocus()
+            }
+            errorMsg.contains("Incorrect password", ignoreCase = true) -> {
+                binding.tilPassword.error = "Incorrect password"
+                binding.etPassword.requestFocus()
+            }
+            errorMsg.contains("Connection failed", ignoreCase = true) -> {
+                com.google.android.material.snackbar.Snackbar.make(
+                    binding.root,
+                    errorMsg,
+                    com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+                ).show()
+            }
+            else -> {
+                Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun navigateToHome() {
+        val intent = Intent(this, HomeActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 
     private fun showLoading(isLoading: Boolean) {

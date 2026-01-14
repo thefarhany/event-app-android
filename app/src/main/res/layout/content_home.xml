@@ -41,64 +41,10 @@
             app:selectionRequired="false"
             app:chipSpacingHorizontal="8dp">
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipAll"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="All"
-                android:checked="true"
-                app:chipBackgroundColor="@color/material_dynamic_tertiary80"
-                app:chipStrokeWidth="0dp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipTechnology"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Technology"
-                app:chipBackgroundColor="@color/material_dynamic_tertiary80"
-                app:chipStrokeWidth="0dp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipMusic"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Music"
-                app:chipBackgroundColor="@color/material_dynamic_tertiary80"
-                app:chipStrokeWidth="0dp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipWorkshop"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Workshop"
-                app:chipBackgroundColor="@color/material_dynamic_tertiary80"
-                app:chipStrokeWidth="0dp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipSports"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sports"
-                app:chipBackgroundColor="@color/material_dynamic_tertiary80"
-                app:chipStrokeWidth="0dp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipArt"
-                style="@style/Widget.Material3.Chip.Filter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Art"
-                app:chipBackgroundColor="@color/material_dynamic_tertiary80"
-                app:chipStrokeWidth="0dp" />
-
         </com.google.android.material.chip.ChipGroup>
 
     </HorizontalScrollView>
+
 
     <!-- Content Container -->
     <FrameLayout
